@@ -4,3 +4,8 @@
 AirThreatManager::AirThreatManager()
 {
 }
+
+void AirThreatMissile::UpdatePosition()
+{
+}
+
