@@ -4,18 +4,13 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Media3D;
 using System.Windows;
 using System.Windows.Input;
-using SAMSimulationSystem.Commands;
-using HelixToolkit.Wpf;
-using System.Windows.Threading;
 using System.Windows.Media;
-using System.Windows.Controls;
-using System.Windows.Shapes;
-using System.Windows.Data;
+using System.Windows.Media.Media3D;
+using System.Windows.Threading;
+using HelixToolkit.Wpf;
+using SAMSimulationSystem.Commands;
 
 
 namespace SAMSimulationSystem.ViewModels
@@ -411,20 +406,37 @@ namespace SAMSimulationSystem.ViewModels
                 OnPropertyChanged();
             }
         }
+        string _StrGuidedMissileNum = "4";
+        public string StrGuidedMissileNum
+        {
+            get => _StrGuidedMissileNum;
+            set
+            {
+                _StrGuidedMissileNum = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         #region Commands
         public void StartMission()
         {
             if (!ReadParameters()) return;
-            DrawRadarCircle();
-            interceptorLaunched = false;
-            interceptorModel = null;
-            interceptorPath.Clear();
-            InterceptorPath = new Point3DCollection(interceptorPath);
-            IsVisibleExplosionSphere = false;//Visibility.Collapsed;
-            timer.Start();
-            StrInfo = "레이더 동작 중...";
+            if (Int32.Parse(StrGuidedMissileNum) > 0)
+            {
+                DrawRadarCircle();
+                interceptorLaunched = false;
+                interceptorModel = null;
+                interceptorPath.Clear();
+                InterceptorPath = new Point3DCollection(interceptorPath);
+                IsVisibleExplosionSphere = false;
+                timer.Start();
+                StrInfo = "레이더 동작 중...";
+            }
+            else 
+            {
+                StrInfo = "잔여 미사일 부족 !";
+            }
         }
 
         public void StopMission()
@@ -462,7 +474,6 @@ namespace SAMSimulationSystem.ViewModels
             radarPos = ParsePoint3D(StrLauncherPos);
 
             // place transforms
-
             ThreatSphereOffsetX = threatPos.X;
             ThreatSphereOffsetY = threatPos.Y;
             ThreatSphereOffsetZ = threatPos.Z;
@@ -644,6 +655,7 @@ namespace SAMSimulationSystem.ViewModels
                     interceptorLaunched = true;
                     LaunchInterceptor();
                     StrInfo = "탐지: Threat 발견! 유도탄 발사.";
+                    StrGuidedMissileNum = (Int32.Parse(StrGuidedMissileNum) - 1).ToString(); // 잔여 미사일 개수 - 1
                 }
             }
 
@@ -725,15 +737,15 @@ namespace SAMSimulationSystem.ViewModels
                     ExplosionSphereOffsetZ = (threatPos.Z + interceptorPos.Z) / 2.0;
 
                     timer.Stop();
-                    StrInfo = $"요격 성공! 충돌 거리 {dist:F2}";
+                    StrInfo = $"[요격 성공!] 충돌 거리 {dist:F2}";
                 }
             }
 
             // 5) safety: out of bounds
-            if (Math.Abs(threatPos.X) > 500 || Math.Abs(threatPos.Z) > 500)
+            if (Math.Abs(threatPos.X) > 30 || Math.Abs(threatPos.Z) > 30) // need to update
             {
                 timer.Stop();
-                StrInfo = "Threat가 범위를 벗어났습니다. 리셋하세요.";
+                StrInfo = "[요격 실패!] Threat가 범위를 벗어났습니다. 리셋하세요.";
             }
 
             // 2D Radar update
@@ -761,9 +773,6 @@ namespace SAMSimulationSystem.ViewModels
 
             // === 2) 기존 blip 잔상 업데이트 ===
             double fadeDuration = 4.0; // 초 단위로 잔상 유지시간
-
-            //DetectedEllipseOpacity
-            //DetectedEllipseVisibility
 
             if (DetectedEllipseVisibility == Visibility.Visible) 
             {

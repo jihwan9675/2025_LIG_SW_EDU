@@ -14,7 +14,7 @@
             <ColumnDefinition Width="0.3*" />
         </Grid.ColumnDefinitions>
 
-        <helix:HelixViewport3D x:Name="view3d" Background="Black" ZoomExtentsWhenLoaded="True">
+        <helix:HelixViewport3D Background="Black" ZoomExtentsWhenLoaded="True">
             <helix:DefaultLights/>
             <!-- Ground Grid -->
             <helix:GridLinesVisual3D Width="90" Length="60" MajorDistance="2" Normal="0,0,1" Center="0,-1.5,0" Fill="Gray"/>
@@ -121,13 +121,19 @@
                 </StackPanel>
             </StackPanel>
 
+            <TextBlock Text="발사대 정보" FontWeight="Bold" Foreground="White" Margin="0,10,0,4"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="잔여 유도탄 개수 : " Foreground="White" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding StrGuidedMissileNum}" Foreground="White" TextWrapping="Wrap"/>
+            </StackPanel>
+
             <TextBlock Text="정보" FontWeight="Bold" Foreground="White" Margin="0,10,0,4"/>
-            <TextBlock x:Name="TxtInfo" Text="{Binding StrInfo}" Foreground="White" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding StrInfo}" Foreground="White" TextWrapping="Wrap"/>
 
             <TextBlock Text="Radar 2D 화면" FontWeight="Bold" Foreground="White" Margin="0,10,0,4"/>
-            <Canvas x:Name="Radar2DCanvas" Width="280" Height="280" Background="Black" Margin="0,0,0,10" ClipToBounds="True">
-                <Ellipse x:Name="RadarCircle2D" Width="280" Height="280" Stroke="Lime" StrokeThickness="1" />
-                <Line x:Name="RadarSweepLine2D" Stroke="Lime" StrokeThickness="2"
+            <Canvas Width="280" Height="280" Background="Black" Margin="0,0,0,10" ClipToBounds="True">
+                <Ellipse Width="280" Height="280" Stroke="Lime" StrokeThickness="1" />
+                <Line Stroke="Lime" StrokeThickness="2"
                       X1="{Binding RadarSweepLine2DX1}"
                       X2="{Binding RadarSweepLine2DX2}"
                       Y1="{Binding RadarSweepLine2DY1}"
